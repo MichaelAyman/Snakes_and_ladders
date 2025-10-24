@@ -1,68 +1,73 @@
 #include "BFS.hpp"
+#include "Queue.hpp"
+#include <iostream>
 
-#include "BFS.hpp"
+using namespace std;
 
 void BFS::bfs(int startVertex)
 {
-    const int V = 100;
-    bool *visited = new bool[V];
-    int *parent = new int[V];
-    int *queue = new int[V];
-    int front = 0, rear = 0;
+    int *visited = new int[100];
+    int *parent = new int[100];
 
-    for (int i = 0; i < V; i++)
+    for (int i = 0; i < 100; i++)
     {
-        visited[i] = false;
+        visited[i] = 0;
         parent[i] = -1;
     }
 
-    visited[startVertex] = true;
-    queue[rear++] = startVertex;
+    Queue q(100);
+    visited[startVertex] = 1;
+    q.enqueue(startVertex);
 
-    while (front != rear)
+    while (!q.isEmpty())
     {
-        int current = queue[front++];
+        int current = q.dequeue();
 
-        if (current == 99)
-            break; // We reached the end!
-
-        int degree = graph->getDegree(current);
         int *neighbors = graph->getNeighbors(current);
+        int count = graph->getDegree(current);
 
-        for (int i = 0; i < degree; i++)
+        for (int i = 0; i < count; i++)
         {
             int next = neighbors[i];
 
             if (!visited[next])
             {
-                visited[next] = true;
+                visited[next] = 1;
                 parent[next] = current;
-                queue[rear++] = next;
+                q.enqueue(next);
+
+                if (next == 99)
+                {
+                    cout << "Reached 100!" << endl;
+
+                    int path[100];
+                    int idx = 0;
+                    int crawl = 99;
+
+                    while (crawl != -1)
+                    {
+                        path[idx++] = crawl;
+                        crawl = parent[crawl];
+                    }
+
+                    cout << "Shortest path: ";
+                    for (int i = idx - 1; i >= 0; i--)
+                    {
+                        cout << path[i] + 1;
+                        if (i != 0)
+                            cout << " -> ";
+                    }
+                    cout << endl;
+
+                    delete[] visited;
+                    delete[] parent;
+                    return;
+                }
             }
         }
     }
 
-    // Reconstruct fastest path
-    int path[V];
-    int idx = 0;
-    int crawl = 99;
-
-    while (crawl != -1)
-    {
-        path[idx++] = crawl;
-        crawl = parent[crawl];
-    }
-
-    cout << "Minimum moves path:" << endl;
-    for (int i = idx - 1; i >= 0; i--)
-    {
-        cout << path[i];
-        if (i > 0)
-            cout << " -> ";
-    }
-    cout << endl;
-
+    cout << "No path found!" << endl;
     delete[] visited;
     delete[] parent;
-    delete[] queue;
 }

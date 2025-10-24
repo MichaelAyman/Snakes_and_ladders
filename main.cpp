@@ -6,83 +6,46 @@ using namespace std;
 
 void printBoard2D(int snakes[][2], int numSnakes, int ladders[][2], int numLadders)
 {
-    cout << "Snakes and Ladders Board:" << endl
-         << endl;
+    cout << "\nSnakes and Ladders Board\n\n";
 
     for (int row = 9; row >= 0; row--)
     {
-        if (row % 2 == 0)
+        bool leftToRight = (row % 2 == 0);
+
+        for (int col = 0; col < 10; col++)
         {
-            // left to right
-            for (int col = 0; col < 10; col++)
+            int realCol = leftToRight ? col : 9 - col;
+            int cell = row * 10 + realCol + 1; // convert to 1-indexed tile
+
+            bool printed = false;
+
+            for (int s = 0; s < numSnakes; s++)
             {
-                int cell = row * 10 + col;
-                bool printed = false;
-
-                for (int s = 0; s < numSnakes; s++)
+                if (snakes[s][0] == cell)
                 {
-                    if (snakes[s][0] == cell)
-                    {
-                        cout << cell << "(S" << snakes[s][1] << ")\t";
-                        printed = true;
-                        break;
-                    }
+                    cout << cell << "(S->" << snakes[s][1] << ")\t";
+                    printed = true;
+                    break;
                 }
-
-                if (!printed)
-                {
-                    for (int l = 0; l < numLadders; l++)
-                    {
-                        if (ladders[l][0] == cell)
-                        {
-                            cout << cell << "(L" << ladders[l][1] << ")\t";
-                            printed = true;
-                            break;
-                        }
-                    }
-                }
-
-                if (!printed)
-                    cout << cell << "\t";
             }
-        }
-        else
-        {
-            // right to left for zigzag pattern
-            for (int col = 9; col >= 0; col--)
+            if (printed)
+                continue;
+
+            for (int l = 0; l < numLadders; l++)
             {
-                int cell = row * 10 + col;
-                bool printed = false;
-
-                for (int s = 0; s < numSnakes; s++)
+                if (ladders[l][0] == cell)
                 {
-                    if (snakes[s][0] == cell)
-                    {
-                        cout << cell << "(S" << snakes[s][1] << ")\t";
-                        printed = true;
-                        break;
-                    }
+                    cout << cell << "(L->" << ladders[l][1] << ")\t";
+                    printed = true;
+                    break;
                 }
-
-                if (!printed)
-                {
-                    for (int l = 0; l < numLadders; l++)
-                    {
-                        if (ladders[l][0] == cell)
-                        {
-                            cout << cell << "(L" << ladders[l][1] << ")\t";
-                            printed = true;
-                            break;
-                        }
-                    }
-                }
-
-                if (!printed)
-                    cout << cell << "\t";
             }
+            if (printed)
+                continue;
+
+            cout << cell << "\t";
         }
-        cout << endl
-             << endl;
+        cout << "\n\n";
     }
 }
 
