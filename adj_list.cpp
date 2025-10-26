@@ -18,7 +18,12 @@ adj_list::adj_list(int numSnakes, int snakes[][2], int numLadders, int ladders[]
     adj = new int *[v];
     for (int i = 0; i < v; i++)
     {
-        int maxMoves = (i <= 93) ? 6 : (99 - i);
+        int maxMoves;
+if (i <= 93)
+    maxMoves = 6;
+else
+    maxMoves = 99 - i;
+
         adj[i] = new int[maxMoves];
         int k = 1;
         for (int j = 0; j < maxMoves; j++)
