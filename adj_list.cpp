@@ -8,11 +8,11 @@ adj_list::adj_list(int numSnakes, int snakes[][2], int numLadders, int ladders[]
 
     // Apply snakes
     for (int i = 0; i < numSnakes; i++)
-        board[snakes[i][0]] = snakes[i][1];
+        board[snakes[i][0] - 1] = snakes[i][1] - 1;
 
     // Apply ladders
     for (int i = 0; i < numLadders; i++)
-        board[ladders[i][0]] = ladders[i][1];
+        board[ladders[i][0] - 1] = ladders[i][1] - 1;
 
     // Build adjacency list using board[]
     adj = new int *[v];

@@ -67,7 +67,7 @@ int main()
 
     // Define ladders: from -> to (higher number)
     int ladders[][2] = {
-        {1, 38},
+        {2, 38},
         {4, 14},
         {9, 31},
         {21, 42},
