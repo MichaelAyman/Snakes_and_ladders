@@ -2,6 +2,7 @@
 
 adj_list::adj_list(int numSnakes, int snakes[][2], int numLadders, int ladders[][2])
 {
+    adj = new int *[v];
     board = new int[v];
     for (int i = 0; i < v; i++)
         board[i] = i;
