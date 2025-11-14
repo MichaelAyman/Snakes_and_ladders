@@ -1,92 +1,78 @@
 #include <iostream>
+#include "BoardDisplay.hpp"
 #include "adj_list.hpp"
 #include "BFS.hpp"
+#include "BoardConfig.hpp"
 
 using namespace std;
 
-void printBoard2D(int snakes[][2], int numSnakes, int ladders[][2], int numLadders)
-{
-    cout << "\nSnakes and Ladders Board\n\n";
-
-    for (int row = 9; row >= 0; row--)
-    {
-        bool leftToRight = (row % 2 == 0);
-
-        for (int col = 0; col < 10; col++)
-        {
-            int realCol = leftToRight ? col : 9 - col;
-            int cell = row * 10 + realCol + 1; // convert to 1-indexed tile
-
-            bool printed = false;
-
-            for (int s = 0; s < numSnakes; s++)
-            {
-                if (snakes[s][0] == cell)
-                {
-                    cout << cell << "(S->" << snakes[s][1] << ")\t";
-                    printed = true;
-                    break;
-                }
-            }
-            if (printed)
-                continue;
-
-            for (int l = 0; l < numLadders; l++)
-            {
-                if (ladders[l][0] == cell)
-                {
-                    cout << cell << "(L->" << ladders[l][1] << ")\t";
-                    printed = true;
-                    break;
-                }
-            }
-            if (printed)
-                continue;
-
-            cout << cell << "\t";
-        }
-        cout << "\n\n";
-    }
-}
-
 int main()
 {
-    // Define snakes: from -> to (lower number)
-    int snakes[][2] = {
-        {16, 6},
-        {47, 26},
-        {49, 11},
-        {56, 53},
-        {62, 19},
-        {64, 60},
-        {87, 24},
-        {93, 73},
-        {95, 75},
-        {98, 78}};
-    int numSnakes = 10;
+    // Limits for how many snakes and ladders we can store
+    const int MAX_SNAKES = 20;
+    const int MAX_LADDERS = 20;
 
-    // Define ladders: from -> to (higher number)
-    int ladders[][2] = {
-        {2, 38},
-        {4, 14},
-        {9, 31},
-        {21, 42},
-        {28, 84},
-        {36, 44},
-        {51, 67},
-        {71, 91},
-        {80, 99} // 99 is last index
-    };
-    int numLadders = 9;
+    int snakes[MAX_SNAKES][2];
+    int ladders[MAX_LADDERS][2];
+    int numSnakes = 0;
+    int numLadders = 0;
 
-    printBoard2D(snakes, numSnakes, ladders, numLadders);
+    // Load configuration from CSV file
+    if (!loadSnakesAndLadders("board.csv",
+                              snakes, numSnakes, MAX_SNAKES,
+                              ladders, numLadders, MAX_LADDERS))
+    {
+        cout << "Error: could not open board.csv" << endl;
+        return 1;
+    }
 
-    // Create graph with snakes and ladders
-    adj_list g(numSnakes, snakes, numLadders, ladders);
+    // Create helper objects
+    BoardDisplay boardDisplay;
+    adj_list graph(numSnakes, snakes, numLadders, ladders);
+    BFS solver(&graph);
 
-    // Run BFS
-    BFS solver(&g);
-    solver.bfs(0);
+    int choice = -1;
+
+    // Simple command-line menu loop
+    while (true)
+    {
+        cout << "\n============================\n";
+        cout << "   Snakes and Ladders Menu  \n";
+        cout << "============================\n";
+        cout << "1. Show board\n";
+        cout << "2. Show shortest path from 1 to 100 (using BFS)\n";
+        cout << "0. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        // handle invalid input (like letters)
+        if (!cin)
+        {
+            cin.clear();
+            cin.ignore(10000, '\n');
+            cout << "Invalid input. Please enter a number.\n";
+            continue;
+        }
+
+        if (choice == 0)
+        {
+            cout << "Exiting... Goodbye!\n";
+            break;
+        }
+        else if (choice == 1)
+        {
+            boardDisplay.printBoard2D(snakes, numSnakes, ladders, numLadders);
+        }
+        else if (choice == 2)
+        {
+            cout << "\nRunning BFS to find shortest path from 1 to 100...\n";
+            solver.bfs(0); // vertex 0 = square 1
+        }
+        else
+        {
+            cout << "Invalid choice. Please try again.\n";
+        }
+    }
 
     return 0;
 }

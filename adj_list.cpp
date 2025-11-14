@@ -2,31 +2,35 @@
 
 adj_list::adj_list(int numSnakes, int snakes[][2], int numLadders, int ladders[][2])
 {
+    // initialize number of vertices here
+    v = 100;
+
+    // allocate adjacency list and board
     adj = new int *[v];
     board = new int[v];
+
+    // initialize board
     for (int i = 0; i < v; i++)
         board[i] = i;
 
-    // Apply snakes
+    // Apply snakes (convert 1-based to 0-based)
     for (int i = 0; i < numSnakes; i++)
         board[snakes[i][0] - 1] = snakes[i][1] - 1;
 
-    // Apply ladders
+    // Apply ladders (convert 1-based to 0-based)
     for (int i = 0; i < numLadders; i++)
         board[ladders[i][0] - 1] = ladders[i][1] - 1;
 
-    // Build adjacency list using board[]
-    adj = new int *[v];
+    // Build adjacency list
     for (int i = 0; i < v; i++)
     {
         int maxMoves = (i <= 93) ? 6 : (99 - i);
         adj[i] = new int[maxMoves];
-        int k = 1;
+
         for (int j = 0; j < maxMoves; j++)
         {
-            int nextSquare = i + k;
+            int nextSquare = i + j + 1;
             adj[i][j] = board[nextSquare];
-            k++;
         }
     }
 }
@@ -35,6 +39,7 @@ adj_list::~adj_list()
 {
     for (int i = 0; i < v; i++)
         delete[] adj[i];
+
     delete[] adj;
     delete[] board;
 }
