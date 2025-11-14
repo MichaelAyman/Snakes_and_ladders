@@ -2,7 +2,7 @@
 #include "BoardDisplay.hpp"
 #include "adj_list.hpp"
 #include "BFS.hpp"
-#include "BoardConfig.hpp"
+#include "RandomBoard.hpp"
 
 using namespace std;
 
@@ -17,16 +17,13 @@ int main()
     int numSnakes = 0;
     int numLadders = 0;
 
-    // Load configuration from CSV file
-    if (!loadSnakesAndLadders("board.csv",
-                              snakes, numSnakes, MAX_SNAKES,
-                              ladders, numLadders, MAX_LADDERS))
-    {
-        cout << "Error: could not open board.csv" << endl;
-        return 1;
-    }
+    // ✅ Generate a NEW random configuration every run
+    // This fills snakes/ladders arrays and also writes them to board.csv
+    generateRandomBoard("board.csv",
+                        snakes, numSnakes, MAX_SNAKES,
+                        ladders, numLadders, MAX_LADDERS);
 
-    // Create helper objects
+    // Create helper objects based on this random board
     BoardDisplay boardDisplay;
     adj_list graph(numSnakes, snakes, numLadders, ladders);
     BFS solver(&graph);
